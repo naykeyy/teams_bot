@@ -8,13 +8,17 @@ Hodíme "teams_bot.py" do složky společně s textovými dokumenty "username.tx
 ### Získání chromedriveru
 Abychom programu umožnili spustit a ovládat náš prohlížeč, musíme si stáhnout tzv. ovladač, nejdřív si zjistíme verzi Chromu následovně:
 
-```bash
+```
 V prohlížeči Chrome vpravo nahoře otevřete nabídku Přizpůsobit (tři tečky nad sebou)
 Zvolte „Nápověda“ a následně „O aplikaci Google Chrome“
 ```
-poté [zde](https://chromedriver.chromium.org/downloads) stáheneme chromedriver odpovídající verzi našeho chromu a vložíme ho do složky ke scriptu.
+Poté [zde](https://chromedriver.chromium.org/downloads) stáheneme chromedriver odpovídající verzi našeho chromu a vložíme ho do složky ke scriptu.
+### Instalace potřebných knihoven
+Aby mohl program správně fungovat, je potřeba také nainstalovat potřebné python knihovny následovně.
+```
+pip3 install -r requirements.txt
+```
 ## Použití
-
 ```
 python3 teams_bot.py
 ```
