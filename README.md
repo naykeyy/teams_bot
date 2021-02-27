@@ -1,6 +1,6 @@
 # Teams Bot
 
-Teams Bot je python program na automatické připojení na hodiny provozované na Microsoft Teams.
+Teams Bot je python program na automatické připojení na hodiny provozované na Microsoft Teams a sdílenými přes Bakaláře.
 
 ## Instalace
 ### Příprava
