@@ -38,7 +38,6 @@ print("""
 """)
 
 time.sleep(1)
-baka_url = "https://skola.zsjp.cz/bakaweb/Login"
 # check if using supported OS
 if sys == "Windows":
   msg = "[X] Verze pro: " + sys + " (Detekováno automaticky..)"
@@ -59,20 +58,28 @@ clean()
 
 try:
   j = open("username.txt", "r")
-except FileNotFoundError as error:
+except:
   print('[X] Nebyl nalezen soubor "username.txt", vytvoř ho v adresáři kde máš tento script a vlož do něj jméno na bakaláře.')
   exit()
 try:
   h = open("password.txt", "r")
-except FileNotFoundError as error:
+except:
   print('[X] Nebyl nalezen soubor "password.txt", vytvoř ho v adresáři kde máš tento script a vlož do něj heslo na bakaláře.')
   exit()
+try:
+  s = open("school.txt", "r")
+except:
+  print('[X] Nebyl nalezen soubor "school.txt", vytvoř ho v adresáři kde máš tento script a vlož do něj odkaz na školní web bakalářů.')
+  exit()
 
+skola = s.readline()
+s.close()
+baka_url = "https://" + skola + "/bakaweb/Login"
 login_user = j.readline()
 login_pass = h.readline()
 j.close()
 h.close()
-login = {"username": login_user, "password": login_pass, "returlUrl": "https://skola.zsjp.cz/bakaweb/Collaboration/OnlineMeeting/MeetingsOverview", "Login":""}
+login = {"username": login_user, "password": login_pass, "returlUrl": "https://" + skola + "/bakaweb/Collaboration/OnlineMeeting/MeetingsOverview", "Login":""}
 
 session = HTMLSession()
 p1 = session.post(baka_url, data=login)
@@ -82,12 +89,12 @@ print("[X] Synchronizuji hodiny z bakalářů..")
 print("")
 print("-------------------------------------")
 
-if p1.url != "https://skola.zsjp.cz/bakaweb/dashboard":
+if p1.url != "https://" + skola + "/bakaweb/dashboard":
   print("[X] Nepodařilo se připojit k bakalářům..")
   exit()
 time.sleep(2)
 clean()
-g1 = session.get("https://skola.zsjp.cz/bakaweb/Collaboration/OnlineMeeting/MeetingsOverview")
+g1 = session.get("https://" + skola + "/bakaweb/Collaboration/OnlineMeeting/MeetingsOverview")
 
 doc = lxml.html.fromstring(g1.content)
 full = doc.xpath('/html/head/script[39]/text()')[0]
@@ -124,7 +131,7 @@ for hodiny in full['hodiny']:
       id_nejblizsi_hodiny = str(hodiny['Id'])
 
 
-r1 = session.get("https://skola.zsjp.cz/bakaweb/Collaboration/OnlineMeeting/Detail/" + id_nejblizsi_hodiny + "?_=1609555900854")
+r1 = session.get("https://" + skola + "/bakaweb/Collaboration/OnlineMeeting/Detail/" + id_nejblizsi_hodiny + "?_=1609555900854")
 dzejsn = json.loads(r1.text)
 url = dzejsn["data"]["JoinMeetingUrl"]
 nazev_hodiny = dzejsn["data"]["Title"]
