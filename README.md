@@ -12,7 +12,7 @@ Abychom programu umožnili spustit a ovládat náš prohlížeč, musíme si st�
 V prohlížeči Chrome vpravo nahoře otevřete nabídku Přizpůsobit (tři tečky nad sebou)
 Zvolte „Nápověda“ a následně „O aplikaci Google Chrome“
 ```
-poté [zde](https://chromedriver.chromium.org/downloads) stáheneme chromedriver a vložíme ho do složky ke scriptu.
+poté [zde](https://chromedriver.chromium.org/downloads) stáheneme chromedriver odpovídající verzi našeho chromu a vložíme ho do složky ke scriptu.
 ## Použití
 
 ```
