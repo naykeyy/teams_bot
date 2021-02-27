@@ -4,7 +4,7 @@ Teams Bot je python program na automatické připojení na hodiny provozované n
 
 ## Instalace
 ### Příprava
-Hodíme "teams_bot.py" do složky společně s textovými dokumenty "username.txt", "password.txt" a "school.txt" kam vložíme udaje na bakaláře a odkaz na web bakalářů vaší školy (např. "www.skola.cz").
+Hodíme "teams_bot.py" do složky společně s textovými dokumenty "username.txt", "password.txt" a "school.txt" kam vložíme udaje na bakaláře a odkaz na web bakalářů vaší školy (např. "skola.cz").
 ### Získání chromedriveru
 Abychom programu umožnili spustit a ovládat náš prohlížeč, musíme si stáhnout tzv. ovladač, nejdřív si zjistíme verzi Chromu následovně:
 
