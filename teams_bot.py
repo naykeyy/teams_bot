@@ -3,14 +3,12 @@
 ################################################################
 
 import os
-from discord_webhook import DiscordWebhook
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import time
 from datetime import datetime as dtt
 import datetime
-import pause
 import requests
 import ctypes
 import locale
@@ -19,43 +17,46 @@ import json
 from requests_html import HTMLSession
 import lxml.html
 import re
-
 sys = platform.system()
-baka_url = "https://skola.zsjp.cz/bakaweb/Login"
-
 ## CLEAN FUNCTION ##
 def clean():
   if sys == "Windows":
     os.system("cls")
   elif sys == "Linux":
     os.system("clear")
-if sys == "Windows":
-  dir = os.path.dirname(os.path.realpath(__file__)) + '\chromedriver.exe'
-elif sys == "Linux":
-  dir = os.getcwd() + "/chromedriver"
 
 clean()
+
 print("""
   _____                          ____        _   
  |_   _|__  __ _ _ __ ___  ___  | __ )  ___ | |_ 
    | |/ _ \/ _` | '_ ` _ \/ __| |  _ \ / _ \| __|
    | |  __/ (_| | | | | | \__ \ | |_) | (_) | |_ 
    |_|\___|\__,_|_| |_| |_|___/ |____/ \___/ \__|
-                    version 1.2 made by NayKeYY
+                    version 1.3 made by NayKeYY
+
 """)
 
-### OS SYSTEM ###
-print("[X] Verze pro: " + sys + " (Detekováno automaticky..)")
-time.sleep(2)
+time.sleep(1)
+baka_url = "https://skola.zsjp.cz/bakaweb/Login"
+# check if using supported OS
 if sys == "Windows":
-  os.system("cls")
+  msg = "[X] Verze pro: " + sys + " (Detekováno automaticky..)"
 elif sys == "Linux":
-  os.system("clear")
+  msg = "[X] Verze pro: " + sys + " (Detekováno automaticky..)"
 else:
-  print("[X] Používáš nepodporovaný OS!")
-  print("[X] Exiting..")
+  print("[X] Používáš nepodporovaný OS! TeamsBot podporuje Windows A Linux..")
   exit()
-## GET NEXT MEETING ##
+
+if sys == "Windows":
+  dir = os.path.dirname(os.path.realpath(__file__)) + '\chromedriver.exe'
+elif sys == "Linux":
+  dir = os.getcwd() + "/chromedriver"
+print(msg)
+time.sleep(2)
+clean()
+
+
 try:
   j = open("username.txt", "r")
 except FileNotFoundError as error:
@@ -87,24 +88,41 @@ if p1.url != "https://skola.zsjp.cz/bakaweb/dashboard":
 time.sleep(2)
 clean()
 g1 = session.get("https://skola.zsjp.cz/bakaweb/Collaboration/OnlineMeeting/MeetingsOverview")
-# get meetings ID list
+
 doc = lxml.html.fromstring(g1.content)
-full = doc.xpath('/html/head/script[38]/text()')[0]
+full = doc.xpath('/html/head/script[39]/text()')[0]
 full = str(re.findall(r'meetingsData = .*;', full)).split("=")[1][:-3]
 full =  '{"hodiny":' + full + '}'
 full = json.loads(full)
+date_format = '%d.%m.%Y-%H:%M'
+hodiny_list = []
+for hodiny in full["hodiny"]:
+  start_data = (hodiny["MeetingStart"])
+  hodiny_list.append(start_data)
 
-pocet_hodin = len(full["hodiny"]) - int(1)
-id_nejblizsi_hodiny = str(full["hodiny"][pocet_hodin]["Id"])
-datum_nejblizsi_hodiny = full["hodiny"][pocet_hodin]["MeetingStart"]
-# outputuje 2021-01-07T09:00:00+01:00
-d = dtt.fromisoformat(datum_nejblizsi_hodiny)
+pocet_hodin = len(hodiny_list)
+# kontroluje jestli je v seznamu nejaka hodina
+if pocet_hodin == 0:
+    print("[X] Nepodařilo se importovat hodiny z bakalářů, nejspíš tam žádné nejsou.")
+    print("")
+    exit()
+
+hodiny_list.sort()
+cas_nejblizsi_hodiny = hodiny_list[0]
+
+d = dtt.fromisoformat(cas_nejblizsi_hodiny)
 datum_nejblizsi_hodiny = d.strftime('%d.%m.%Y - %H:%M')
 rok = int(d.strftime("%Y"))
 mesic = int(d.strftime("%m"))
 den = int(d.strftime("%d"))
-hodina = int(d.strftime("%H"))
-minuta = int(d.strftime("%M"))
+hodina = int(d.strftime("%H")) - 1
+minuta = int(d.strftime("%M")) + 55
+
+# Funkce na ziskani ID nejblizsi hodiny ktera mi trvala tak mesic nez jsem to dopici udelal vsechno jo
+for hodiny in full['hodiny']:
+    if hodiny['MeetingStart'] == cas_nejblizsi_hodiny:
+      id_nejblizsi_hodiny = str(hodiny['Id'])
+
 
 r1 = session.get("https://skola.zsjp.cz/bakaweb/Collaboration/OnlineMeeting/Detail/" + id_nejblizsi_hodiny + "?_=1609555900854")
 dzejsn = json.loads(r1.text)
@@ -144,12 +162,16 @@ sleep_until(target)
 
 clean()
 ### CHECK OS LANGUAGE ### 
-windll = ctypes.windll.kernel32
-lang = (locale.windows_locale[ windll.GetUserDefaultUILanguage() ])
-if lang == "cs_CZ":
-  prefix = "(Host)"
-else:
+if sys == "Windows":
+  windll = ctypes.windll.kernel32
+  lang = (locale.windows_locale[ windll.GetUserDefaultUILanguage() ])
+  if lang == "cs_CZ":
+    prefix = "(Host)"
+  else:
+    prefix = "(Guest)"
+elif sys == "Linux":
   prefix = "(Guest)"
+
 #
 jmeno = "Zeman Jakub " + prefix
 #
@@ -182,7 +204,3 @@ nameinput = driver.find_element_by_xpath("""//*[@id="username"]""")
 nameinput.send_keys(jmeno)
 # Klikne na připojit.
 driver.find_element_by_xpath("""//*[@id="page-content-wrapper"]/div[1]/div/calling-pre-join-screen/div/div/div[2]/div[1]/div[2]/div/div/section/div[1]/div/div[2]/button""").click()
-# Webhook o pripojeni.
-webhook = DiscordWebhook(url='https://discord.com/api/webhooks/794061185561133096/fn2zax9Pnjq9o9RSMkvntXZ2PW3BJ1gL9fE-dA7ZpxVuIhJ7rFTR_TzsxHGbeYm9e0Qm', content="Úspěšně jsem se připojil na hodinu pod jménem: " + '"' + jmeno + '"' + " !")
-response = webhook.execute()
-
