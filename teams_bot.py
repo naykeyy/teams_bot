@@ -180,7 +180,7 @@ elif sys == "Linux":
   prefix = "(Guest)"
 
 #
-jmeno = "Zeman Jakub " + prefix
+jmeno = "SEM VLOZ JMENO NA TEAMS " + prefix
 #
 ### PRIPOJENI ###
 # Chrome oprávnění (mikrofon, webkamera..)
